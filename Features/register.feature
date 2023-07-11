@@ -9,9 +9,9 @@ Background:
   
     Scenario: Crete new account by using signIn button 
     When clicks on signIn 
-    And User registers as new customer by entering personal details "frst_name8" "last_name8" "first_name8@test.in"
+    And User registers as new customer by entering personal details "frst_name9" "last_name9" "first_name9@test.in"
     And enters address details "church street" "United Kingdom" " Aberdeen" "Bangalore" "560000"
-    And enters Login detais "automation_test8" "test@123" "test@123"
+    And enters Login detais "automation_test9" "test@123" "test@123"
     And accepts the privacy policy 
     And Clicks on continue
     Then User Would see Account created successfully message

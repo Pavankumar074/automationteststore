@@ -1,29 +1,39 @@
 package stepDefinitions;
 
+import org.apache.log4j.Logger;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.testng.Assert;
 
+import helper.LoggerHelper;
 import io.cucumber.java.After;
 import io.cucumber.java.AfterStep;
 import io.cucumber.java.Scenario;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import pageObjects.RegisterPage;
 
 public class signInStepDefinition {
 	
 	public WebDriver driver;
 	public RegisterPage rp;
+	Logger log = LoggerHelper.getLogger(signInStepDefinition.class);
 	
-	
+
 	//Method to launch browser
 	@Given("User launches Chrome browser")
 	public void user_launches_chrome_browser() {
-	    System.setProperty("wedriver.chrome.driver",System.getProperty("use")+"//Drivers/chromedriver.exe" );
+		WebDriverManager.chromedriver().setup();
+		ChromeOptions options= new ChromeOptions();
+		options.addArguments("--remote-allow-origins=*");
+		
+	    //System.setProperty("wedriver.chrome.driver",System.getProperty("use")+"//Drivers/chromedrive.exe" );
 	    driver = new ChromeDriver();
 	    driver.manage().window().maximize();
 	    rp= new RegisterPage(driver);
@@ -104,22 +114,29 @@ public class signInStepDefinition {
 	}
 	
 	
-	//Method will execute after each scenario
 	@After
-	public void tear_down()
-	{
-		driver.quit();
-	}
-	
-	@AfterStep
-	public void addScreenshot(Scenario scenario)
-	{
-		if(scenario.isFailed())
-		{
-			final byte[] screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.BYTES);
-			scenario.attach(screenshot, "image/png", scenario.getName());
-			
+	public void endTest(Scenario scenario) {
+		if (scenario.isFailed()) {
+
+			try {
+				log.info(scenario.getName() + " is Failed");
+				final byte[] screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.BYTES);
+				scenario.attach(screenshot, "image/png", scenario.getName());
+			} catch (WebDriverException e) {
+				e.printStackTrace();
+			}
+
+		} else {
+			try {
+				log.info(scenario.getName() + " is pass");
+				final byte[] screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.BYTES);
+				scenario.attach(screenshot, "image/png", scenario.getName());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
+
+		driver.quit();
 	}
 
 }
